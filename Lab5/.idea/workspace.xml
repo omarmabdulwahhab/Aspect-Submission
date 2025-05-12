@@ -4,52 +4,79 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5ad6594a-edb8-411c-8052-d93761941aab" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Lab4/src/main/java/com/example/demo/aspect/LockingAspect.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/src/main/java/com/example/demo/aspect/LockingAspect.java" afterDir="false" />
+    <list default="true" id="e8287af1-5e09-429c-9802-7ce9ac25fc56" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/Lab5/config/SecurityConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/Lab5/controller/DemoController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/Lab5/model/AuthRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/Lab5/service/JwtService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/Lab5/util/JwtUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/src/main/java/com/example/demo/JwtAuthApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/src/main/java/com/example/demo/config/JwtAuthenticationFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/src/main/java/com/example/demo/config/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/src/main/java/com/example/demo/controller/AuthRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/src/main/java/com/example/demo/controller/TestController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/src/main/java/com/example/demo/model/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/src/main/java/com/example/demo/service/CustomUserDetailsService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/src/main/java/com/example/demo/util/JwtUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab55/src/test/java/com/example/demo/DemoApplicationTests.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExternalProjectsManager">
-    <system id="GRADLE">
-      <state>
-        <projects_view>
-          <tree_state>
-            <expand />
-            <select />
-          </tree_state>
-        </projects_view>
-      </state>
-    </system>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;omarmabdulwahhab&quot;
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "omarmabdulwahhab"
   }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/omarmabdulwahhab/Aspect-Submission.git&quot;,
-    &quot;accountId&quot;: &quot;eef1c180-22c9-47ad-bbf6-8bf8ede43068&quot;
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/omarmabdulwahhab/Aspect-Submission.git",
+    "accountId": "eef1c180-22c9-47ad-bbf6-8bf8ede43068"
   }
-}</component>
-  <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 4
-}</component>
-  <component name="ProjectId" id="2wrZCk3hWesrTsZ9z18xjVjEQne" />
+}]]></component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="2wuFtq1Hy3VjaZ8U5o1ebwjXVls" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.JwtAuthApplication.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
@@ -60,11 +87,11 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="5ad6594a-edb8-411c-8052-d93761941aab" name="Changes" comment="" />
-      <created>1746801529351</created>
+      <changelist id="e8287af1-5e09-429c-9802-7ce9ac25fc56" name="Changes" comment="" />
+      <created>1746883769674</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1746801529351</updated>
+      <updated>1746883769674</updated>
     </task>
     <servers />
   </component>
