@@ -6,6 +6,7 @@ import com.bostman.dto.DeliveryStatusUpdateDTO;
 import com.bostman.entity.User;
 import com.bostman.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +21,12 @@ public class DeliveryController {
 
     @PostMapping
     public String schedule(@RequestBody DeliveryRequestDTO dto, @AuthenticationPrincipal User user) {
-        return deliveryService.createDelivery(dto, user);
+        return deliveryService.createDelivery(dto, user.getEmail());
     }
 
     @GetMapping
     public List<DeliveryResponseDTO> myDeliveries(@AuthenticationPrincipal User user) {
-        return deliveryService.getMyDeliveries(user);
+        return deliveryService.getMyDeliveries(user.getEmail());
     }
 
     @GetMapping("/{trackingId}")
@@ -40,4 +41,10 @@ public class DeliveryController {
         // user available for future authorization checks
         return deliveryService.updateDeliveryStatus(trackingId, statusUpdateDTO.getNewStatus());
     }
+    @GetMapping("/my-deliveries")
+    public ResponseEntity<List<DeliveryResponseDTO>> getMyDeliveries(@AuthenticationPrincipal User user) {
+        List<DeliveryResponseDTO> deliveries = deliveryService.getMyDeliveries(user.getEmail());
+        return ResponseEntity.ok(deliveries);
+    }
+
 }

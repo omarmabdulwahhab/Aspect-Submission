@@ -22,7 +22,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final MessageProducer messageProducer;
 
     @Override
-    public String createDelivery(DeliveryRequestDTO request, User user) {
+    public String createDelivery(DeliveryRequestDTO request, String user) {
         Delivery delivery = Delivery.builder()
                 .pickupLocation(request.getPickupLocation())
                 .dropoffLocation(request.getDropoffLocation())
@@ -46,14 +46,14 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public List<DeliveryResponseDTO> getMyDeliveries(User user) {
+    public List<DeliveryResponseDTO> getMyDeliveries(String user) {
         return deliveryRepository.findByCustomer(user).stream().map(d ->
                 DeliveryResponseDTO.builder()
                         .trackingId(d.getTrackingId())
                         .pickupLocation(d.getPickupLocation())
                         .dropoffLocation(d.getDropoffLocation())
                         .status(d.getStatus())
-                        .assignedDriver(d.getAssignedDriver())
+                        .assignedDriver(String.valueOf(d.getAssignedDriver()))
                         .build()
         ).toList();
     }
