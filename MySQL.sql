@@ -1,0 +1,1 @@
+CREATE DATABASE bostman_db;

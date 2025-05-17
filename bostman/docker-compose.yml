@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: bostman-rabbitmq
+    ports:
+      - "5672:5672"    # AMQP protocol port
+      - "15672:15672"  # Management console port
+    environment:
+      - RABBITMQ_DEFAULT_USER=bostman
+      - RABBITMQ_DEFAULT_PASS=bostman123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - bostman_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: bostman-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: bostman_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - bostman_network
+
+volumes:
+  rabbitmq_data:
+    name: bostman_rabbitmq_data
+  mysql_data:
+    name: bostman_mysql_data
+
+networks:
+  bostman_network:
+    name: bostman_network 
