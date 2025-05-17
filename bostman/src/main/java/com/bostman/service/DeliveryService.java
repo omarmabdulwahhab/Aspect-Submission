@@ -7,8 +7,8 @@ import com.bostman.entity.DeliveryStatus;
 import java.util.List;
 
 public interface DeliveryService {
-    String createDelivery(DeliveryRequestDTO request, String user);
-    List<DeliveryResponseDTO> getMyDeliveries(String user);
+    String createDelivery(DeliveryRequestDTO request, String email);
+    List<DeliveryResponseDTO> getMyDeliveries(String email);
     DeliveryResponseDTO getByTrackingId(String trackingId);
     DeliveryResponseDTO updateDeliveryStatus(String trackingId, DeliveryStatus newStatus);
 }

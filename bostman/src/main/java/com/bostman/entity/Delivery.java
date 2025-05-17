@@ -26,9 +26,11 @@ public class Delivery {
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
 
-    //private String assignedDriver;
+    @ManyToOne
+    @JoinColumn(name = "assigned_driver_id")
     private User assignedDriver;
 
     @ManyToOne
+    @JoinColumn(name = "customer_id")
     private User customer;
 }

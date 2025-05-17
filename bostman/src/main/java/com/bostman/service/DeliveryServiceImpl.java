@@ -7,6 +7,7 @@ import com.bostman.entity.Delivery;
 import com.bostman.entity.DeliveryStatus;
 import com.bostman.entity.User;
 import com.bostman.repository.DeliveryRepository;
+import com.bostman.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,24 +19,28 @@ import java.util.UUID;
 public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
+    private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final MessageProducer messageProducer;
 
     @Override
-    public String createDelivery(DeliveryRequestDTO request, String user) {
+    public String createDelivery(DeliveryRequestDTO request, String email) {
+        User customer = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Customer not found with email: " + email));
+
         Delivery delivery = Delivery.builder()
                 .pickupLocation(request.getPickupLocation())
                 .dropoffLocation(request.getDropoffLocation())
                 .scheduledTime(request.getScheduledTime())
                 .status(DeliveryStatus.SCHEDULED)
                 .trackingId(UUID.randomUUID().toString().substring(0, 8).toUpperCase())
-                .customer(user)
+                .customer(customer)
                 .build();
 
         deliveryRepository.save(delivery);
 
         messageProducer.sendEmailMessage(new EmailMessage(
-                user.getEmail(),
+                customer.getEmail(),
                 "Your Delivery is Scheduled",
                 "Tracking ID: " + delivery.getTrackingId() + "<br>" +
                         "Pickup: " + request.getPickupLocation() + "<br>" +
@@ -46,8 +51,11 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public List<DeliveryResponseDTO> getMyDeliveries(String user) {
-        return deliveryRepository.findByCustomer(user).stream().map(d ->
+    public List<DeliveryResponseDTO> getMyDeliveries(String email) {
+        // User customer = userRepository.findByEmail(email) // We don't strictly need to fetch the User object here anymore for this specific call
+        //         .orElseThrow(() -> new RuntimeException("Customer not found with email: " + email));
+
+        return deliveryRepository.findByCustomerEmail(email).stream().map(d ->
                 DeliveryResponseDTO.builder()
                         .trackingId(d.getTrackingId())
                         .pickupLocation(d.getPickupLocation())
@@ -68,7 +76,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .pickupLocation(d.getPickupLocation())
                 .dropoffLocation(d.getDropoffLocation())
                 .status(d.getStatus())
-                .assignedDriver(d.getAssignedDriver())
+                .assignedDriver(d.getAssignedDriver() != null ? d.getAssignedDriver().getEmail() : null)
                 .build();
     }
 
@@ -100,7 +108,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .pickupLocation(updatedDelivery.getPickupLocation())
                 .dropoffLocation(updatedDelivery.getDropoffLocation())
                 .status(updatedDelivery.getStatus())
-                .assignedDriver(updatedDelivery.getAssignedDriver())
+                .assignedDriver(updatedDelivery.getAssignedDriver() != null ? updatedDelivery.getAssignedDriver().getEmail() : null)
                 .build();
     }
 }
