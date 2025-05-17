@@ -7,10 +7,8 @@ import com.bostman.entity.Delivery;
 import com.bostman.entity.DeliveryStatus;
 import com.bostman.entity.User;
 import com.bostman.repository.DeliveryRepository;
-import com.bostman.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.bostman.service.NotificationService;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,15 +18,11 @@ import java.util.UUID;
 public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
-    private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final MessageProducer messageProducer;
 
     @Override
-    public String createDelivery(DeliveryRequestDTO request, String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+    public String createDelivery(DeliveryRequestDTO request, User user) {
         Delivery delivery = Delivery.builder()
                 .pickupLocation(request.getPickupLocation())
                 .dropoffLocation(request.getDropoffLocation())
@@ -39,13 +33,6 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .build();
 
         deliveryRepository.save(delivery);
-//        notificationService.sendEmail(
-//                user.getEmail(),
-//                "Your Delivery is Scheduled",
-//                "Tracking ID: " + delivery.getTrackingId() + "<br>" +
-//                        "Pickup: " + request.getPickupLocation() + "<br>" +
-//                        "Dropoff: " + request.getDropoffLocation()
-//        );
 
         messageProducer.sendEmailMessage(new EmailMessage(
                 user.getEmail(),
@@ -59,10 +46,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public List<DeliveryResponseDTO> getMyDeliveries(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+    public List<DeliveryResponseDTO> getMyDeliveries(User user) {
         return deliveryRepository.findByCustomer(user).stream().map(d ->
                 DeliveryResponseDTO.builder()
                         .trackingId(d.getTrackingId())
@@ -93,19 +77,16 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = deliveryRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new RuntimeException("Delivery not found with tracking ID: " + trackingId));
 
-        // You might want to add logic here to check for valid status transitions
-        // For example, a delivery can't go from DELIVERED back to SCHEDULED.
         delivery.setStatus(newStatus);
         Delivery updatedDelivery = deliveryRepository.save(delivery);
 
-        // Send notification
         User customer = updatedDelivery.getCustomer();
         if (customer != null) {
             String subject = "Delivery Status Updated: " + newStatus.toString();
             String body = "Your delivery with Tracking ID: " + updatedDelivery.getTrackingId() +
-                          " has been updated to: " + newStatus.toString() + ".<br>" +
-                          "Pickup: " + updatedDelivery.getPickupLocation() + "<br>" +
-                          "Dropoff: " + updatedDelivery.getDropoffLocation();
+                    " has been updated to: " + newStatus.toString() + ".<br>" +
+                    "Pickup: " + updatedDelivery.getPickupLocation() + "<br>" +
+                    "Dropoff: " + updatedDelivery.getDropoffLocation();
 
             messageProducer.sendEmailMessage(new EmailMessage(
                     customer.getEmail(),

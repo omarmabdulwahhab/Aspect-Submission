@@ -26,7 +26,8 @@ public class Delivery {
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
 
-    private String assignedDriver;
+    //private String assignedDriver;
+    private User assignedDriver;
 
     @ManyToOne
     private User customer;

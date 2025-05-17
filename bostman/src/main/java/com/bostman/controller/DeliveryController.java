@@ -20,12 +20,12 @@ public class DeliveryController {
 
     @PostMapping
     public String schedule(@RequestBody DeliveryRequestDTO dto, @AuthenticationPrincipal User user) {
-        return deliveryService.createDelivery(dto, user.getEmail());
+        return deliveryService.createDelivery(dto, user);
     }
 
     @GetMapping
     public List<DeliveryResponseDTO> myDeliveries(@AuthenticationPrincipal User user) {
-        return deliveryService.getMyDeliveries(user.getEmail());
+        return deliveryService.getMyDeliveries(user);
     }
 
     @GetMapping("/{trackingId}")
@@ -37,7 +37,7 @@ public class DeliveryController {
     public DeliveryResponseDTO updateStatus(@PathVariable String trackingId,
                                             @RequestBody DeliveryStatusUpdateDTO statusUpdateDTO,
                                             @AuthenticationPrincipal User user) {
-        // user principal is available for future authorization checks
+        // user available for future authorization checks
         return deliveryService.updateDeliveryStatus(trackingId, statusUpdateDTO.getNewStatus());
     }
 }
