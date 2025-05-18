@@ -20,6 +20,8 @@ public class Delivery {
 
     private String pickupLocation;
     private String dropoffLocation;
+    private String description;
+    private String recipientName;
 
     private LocalDateTime scheduledTime;
 

@@ -15,5 +15,5 @@ public interface DeliveryService {
     List<DeliveryResponseDTO> getAllDeliveries();
     List<DeliveryResponseDTO> getDeliveriesByDriver(String email);
     String markAsDelivered(String trackingId, String driverEmail);
-
+    void deleteDelivery(String trackingId, String userEmail);
 }

@@ -1,30 +1,45 @@
-import React from 'react';
-import { useState } from 'react';
-import api from '../api/axios';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-export default function Login() {
-  const [form, setForm] = useState({ email: '', password: '' });
+export default function Register() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleRegister = async (e) => {
+    e.preventDefault();
     try {
-      const { data } = await api.post('/auth/register', form);
-      localStorage.setItem('token', data); // Save JWT
-      navigate('/dashboard');
+      await axios.post('/register/', { email, password }); // Use the correct endpoint
+      alert('Registration successful! Please log in.');
+      navigate('/');
     } catch (err) {
-      alert('Registration failed');
+      alert('Registration failed. Please try again.');
     }
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-xl font-bold">Login</h1>
-      <input className="border p-2 w-full my-2" placeholder="Email"
-        onChange={e => setForm({ ...form, email: e.target.value })} />
-      <input className="border p-2 w-full my-2" placeholder="Password" type="password"
-        onChange={e => setForm({ ...form, password: e.target.value })} />
-      <button onClick={handleLogin} className="bg-blue-600 text-white px-4 py-2 rounded">Login</button>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      <h1 className="text-4xl font-bold mb-8">Register</h1>
+      <form onSubmit={handleRegister} className="bg-white p-6 rounded shadow-md w-80">
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
+        />
+        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
+          Register
+        </button>
+      </form>
     </div>
   );
 }

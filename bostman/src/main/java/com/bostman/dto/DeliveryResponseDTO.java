@@ -8,8 +8,10 @@ import lombok.Data;
 @Builder
 public class DeliveryResponseDTO {
     private String trackingId;
-    private String pickupLocation;
-    private String dropoffLocation;
+    private String pickupAddress;
+    private String recipientAddress;
     private DeliveryStatus status;
-    private String assignedDriver;
+    private String driverEmail;
+    private String description;
+    private String recipientName;
 }

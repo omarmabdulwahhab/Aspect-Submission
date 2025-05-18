@@ -29,54 +29,80 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .orElseThrow(() -> new RuntimeException("Customer not found with email: " + email));
 
         Delivery delivery = Delivery.builder()
-                .pickupLocation(request.getPickupLocation())
-                .dropoffLocation(request.getDropoffLocation())
+                .pickupLocation(request.getPickupAddress())
+                .dropoffLocation(request.getRecipientAddress())
                 .scheduledTime(request.getScheduledTime())
                 .status(DeliveryStatus.SCHEDULED)
                 .trackingId(UUID.randomUUID().toString().substring(0, 8).toUpperCase())
                 .customer(customer)
+                .description(request.getDescription())
+                .recipientName(request.getRecipientName())
                 .build();
 
-        deliveryRepository.save(delivery);
+        Delivery savedDelivery = deliveryRepository.save(delivery);
+
+        String emailBody = String.format(
+            "Hello %s,<br><br>"  +
+            "Your delivery has been successfully scheduled! Here are the details:<br><br>" +
+            "<b>Tracking ID:</b> %s<br>" +
+            "<b>Status:</b> %s<br>" +
+            "<b>Description:</b> %s<br>" +
+            "<b>Recipient Name:</b> %s<br>" +
+            "<b>Pickup Address:</b> %s<br>" +
+            "<b>Recipient Address (Dropoff):</b> %s<br><br>" +
+            "Thank you for using Bostman!",
+            customer.getFullName(),
+            savedDelivery.getTrackingId(),
+            savedDelivery.getStatus().toString(),
+            savedDelivery.getDescription() != null ? savedDelivery.getDescription() : "N/A",
+            savedDelivery.getRecipientName() != null ? savedDelivery.getRecipientName() : "N/A",
+            savedDelivery.getPickupLocation() != null ? savedDelivery.getPickupLocation() : "N/A",
+            savedDelivery.getDropoffLocation() != null ? savedDelivery.getDropoffLocation() : "N/A"
+        );
 
         messageProducer.sendEmailMessage(new EmailMessage(
                 customer.getEmail(),
-                "Your Delivery is Scheduled",
-                "Tracking ID: " + delivery.getTrackingId() + "<br>" +
-                        "Pickup: " + request.getPickupLocation() + "<br>" +
-                        "Dropoff: " + request.getDropoffLocation()
+                "Your Bostman Delivery is Scheduled - Tracking ID: " + savedDelivery.getTrackingId(),
+                emailBody
         ));
 
-        return delivery.getTrackingId();
+        return savedDelivery.getTrackingId();
     }
 
     @Override
     public List<DeliveryResponseDTO> getMyDeliveries(String email) {
-        // User customer = userRepository.findByEmail(email) // We don't strictly need to fetch the User object here anymore for this specific call
-        //         .orElseThrow(() -> new RuntimeException("Customer not found with email: " + email));
-
-        return deliveryRepository.findByCustomerEmail(email).stream().map(d ->
-                DeliveryResponseDTO.builder()
-                        .trackingId(d.getTrackingId())
-                        .pickupLocation(d.getPickupLocation())
-                        .dropoffLocation(d.getDropoffLocation())
-                        .status(d.getStatus())
-                        .assignedDriver(String.valueOf(d.getAssignedDriver()))
-                        .build()
-        ).toList();
+        return deliveryRepository.findByCustomerEmail(email).stream().map(d -> {
+            String driverEmail = d.getAssignedDriver() != null ? d.getAssignedDriver().getEmail() : null;
+            return DeliveryResponseDTO.builder()
+                    .trackingId(d.getTrackingId())
+                    .pickupAddress(d.getPickupLocation())
+                    .recipientAddress(d.getDropoffLocation())
+                    .status(d.getStatus())
+                    .driverEmail(driverEmail)
+                    .description(d.getDescription())
+                    .recipientName(d.getRecipientName())
+                    .build();
+        }).toList();
     }
 
     @Override
     public DeliveryResponseDTO getByTrackingId(String trackingId) {
         Delivery d = deliveryRepository.findByTrackingId(trackingId)
-                .orElseThrow(() -> new RuntimeException("Not found"));
+                .orElseThrow(() -> new RuntimeException("Delivery not found with tracking ID: " + trackingId));
+
+        String driverEmail = null;
+        if (d.getAssignedDriver() != null) {
+            driverEmail = d.getAssignedDriver().getEmail();
+        }
 
         return DeliveryResponseDTO.builder()
                 .trackingId(d.getTrackingId())
-                .pickupLocation(d.getPickupLocation())
-                .dropoffLocation(d.getDropoffLocation())
+                .pickupAddress(d.getPickupLocation())
+                .recipientAddress(d.getDropoffLocation())
                 .status(d.getStatus())
-                .assignedDriver(d.getAssignedDriver() != null ? d.getAssignedDriver().getEmail() : null)
+                .driverEmail(driverEmail)
+                .description(d.getDescription())
+                .recipientName(d.getRecipientName())
                 .build();
     }
 
@@ -102,42 +128,52 @@ public class DeliveryServiceImpl implements DeliveryService {
                     body
             ));
         }
-
+        
+        String driverEmail = updatedDelivery.getAssignedDriver() != null ? updatedDelivery.getAssignedDriver().getEmail() : null;
         return DeliveryResponseDTO.builder()
                 .trackingId(updatedDelivery.getTrackingId())
-                .pickupLocation(updatedDelivery.getPickupLocation())
-                .dropoffLocation(updatedDelivery.getDropoffLocation())
+                .pickupAddress(updatedDelivery.getPickupLocation())
+                .recipientAddress(updatedDelivery.getDropoffLocation())
                 .status(updatedDelivery.getStatus())
-                .assignedDriver(updatedDelivery.getAssignedDriver() != null ? updatedDelivery.getAssignedDriver().getEmail() : null)
+                .driverEmail(driverEmail)
+                .description(updatedDelivery.getDescription())
+                .recipientName(updatedDelivery.getRecipientName())
                 .build();
     }
 
     @Override
     public List<DeliveryResponseDTO> getAllDeliveries() {
-        return deliveryRepository.findAll().stream().map(d ->
-                DeliveryResponseDTO.builder()
-                        .trackingId(d.getTrackingId())
-                        .pickupLocation(d.getPickupLocation())
-                        .dropoffLocation(d.getDropoffLocation())
-                        .status(d.getStatus())
-                        .assignedDriver(d.getAssignedDriver() != null ? d.getAssignedDriver().getFullName() : null)
-                        .build()
-        ).toList();
+        return deliveryRepository.findAll().stream().map(d -> {
+            String driverEmail = d.getAssignedDriver() != null ? d.getAssignedDriver().getEmail() : null;
+            return DeliveryResponseDTO.builder()
+                    .trackingId(d.getTrackingId())
+                    .pickupAddress(d.getPickupLocation())
+                    .recipientAddress(d.getDropoffLocation())
+                    .status(d.getStatus())
+                    .driverEmail(driverEmail)
+                    .description(d.getDescription())
+                    .recipientName(d.getRecipientName())
+                    .build();
+        }).toList();
     }
+
     @Override
     public List<DeliveryResponseDTO> getDeliveriesByDriver(String email) {
         User driver = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Driver not found"));
 
         return deliveryRepository.findByAssignedDriver(driver).stream()
-                .map(d -> DeliveryResponseDTO.builder()
-                        .trackingId(d.getTrackingId())
-                        .pickupLocation(d.getPickupLocation())
-                        .dropoffLocation(d.getDropoffLocation())
-                        .status(d.getStatus())
-                        .assignedDriver(driver.getFullName())
-                        .build()
-                ).toList();
+                .map(d -> {
+                    return DeliveryResponseDTO.builder()
+                            .trackingId(d.getTrackingId())
+                            .pickupAddress(d.getPickupLocation())
+                            .recipientAddress(d.getDropoffLocation())
+                            .status(d.getStatus())
+                            .driverEmail(driver.getEmail())
+                            .description(d.getDescription())
+                            .recipientName(d.getRecipientName())
+                            .build();
+                }).toList();
     }
 
     @Override
@@ -158,5 +194,21 @@ public class DeliveryServiceImpl implements DeliveryService {
         return "Delivery marked as delivered.";
     }
 
+    @Override
+    public void deleteDelivery(String trackingId, String userEmail) {
+        Delivery delivery = deliveryRepository.findByTrackingId(trackingId)
+                .orElseThrow(() -> new RuntimeException("Delivery not found with tracking ID: " + trackingId));
 
+        if (delivery.getCustomer() == null || !delivery.getCustomer().getEmail().equals(userEmail)) {
+            // In a real application, you might also allow ADMIN role to delete any delivery
+            // For example: check if user has ADMIN role, if so, skip customer check.
+            throw new SecurityException("You are not authorized to delete this delivery.");
+        }
+
+        // Add any other business logic checks here if needed, e.g., based on delivery.getStatus()
+        // For example, prevent deletion if status is IN_TRANSIT or DELIVERED.
+
+        deliveryRepository.delete(delivery);
+        // Optionally, send a notification about the deletion.
+    }
 }

@@ -1,17 +1,149 @@
+/* CSS to be applied to bostman-frontend/src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+:root {
+  --bostman-orange-primary: #FFA500; /* Bright Orange - Bostman's signature */
+  --bostman-orange-secondary: #FFC04D; /* Lighter Orange - for highlights, hover states */
+  --bostman-orange-dark: #E69500;    /* Darker Orange - for borders, accents */
+  --bostman-text-light: #FFFFFF;
+  --bostman-text-dark: #333333;
+  --bostman-background-light: #FFF8F0; /* Very light orange/cream for background */
+  --bostman-background-grey: #f7fafc;  /* Light grey for cards/sections */
+  --bostman-border-color: #FFDAB9;   /* Light peachy orange for borders */
+  --bostman-success: #4CAF50;        /* Green for success messages */
+  --bostman-error: #F44336;          /* Red for error messages */
+
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --font-family-monospace: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }
 
+body {
+  margin: 0;
+  font-family: var(--font-family-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bostman-background-light);
+  color: var(--bostman-text-dark);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--bostman-orange-primary);
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  font-weight: 600;
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.875rem; }
+h3 { font-size: 1.5rem; }
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--bostman-orange-dark);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+  color: var(--bostman-orange-primary);
+  text-decoration: underline;
+}
+
+button, .button-style { /* Added .button-style for applying to non-button elements like Links */
+  background-color: var(--bostman-orange-primary);
+  color: var(--bostman-text-light);
+  padding: 0.75em 1.5em;
+  border: none;
+  border-radius: 8px; /* Rounded corners for friendliness */
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+button:hover, .button-style:hover {
+  background-color: var(--bostman-orange-secondary);
+  color: var(--bostman-text-dark); /* Slightly darker text on lighter orange hover */
+  transform: translateY(-1px);
+}
+
+button:disabled, .button-style:disabled {
+  background-color: #FFDAB9; /* Lighter, less saturated orange for disabled */
+  color: #A0A0A0;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="number"],
+textarea,
+select {
+  padding: 0.75em 1em;
+  border: 1px solid var(--bostman-border-color);
+  border-radius: 6px; /* Rounded corners */
+  font-size: 1rem;
+  font-family: var(--font-family-sans);
+  color: var(--bostman-text-dark);
+  background-color: #FFFFFF;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  width: 100%; /* Make inputs generally full-width within their container */
+  box-sizing: border-box; /* Important for width: 100% and padding */
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="date"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--bostman-orange-primary);
+  box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.2); /* Orange glow on focus */
+  outline: none;
+}
+
+/* Basic card styling for containers */
+.card {
+  background-color: var(--bostman-background-grey);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+}
+
+/* Utility classes for text colors (can be used with Tailwind) */
+.text-bostman-orange-primary { color: var(--bostman-orange-primary); }
+.bg-bostman-orange-primary { background-color: var(--bostman-orange-primary); }
+.text-bostman-success { color: var(--bostman-success); }
+.text-bostman-error { color: var(--bostman-error); }
+
+
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--font-family-monospace);
+  background-color: #FFF0E0; /* Light orange background for code blocks */
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  color: var(--bostman-orange-dark);
 }

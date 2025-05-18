@@ -7,11 +7,16 @@ import com.bostman.entity.Role;
 import com.bostman.entity.User;
 import com.bostman.repository.UserRepository;
 import com.bostman.security.JwtUtil;
+import com.bostman.dto.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -29,11 +34,14 @@ public class UserServiceImpl implements UserService {
             return "Email already registered.";
         }
 
+        Set<Role> roles = new HashSet<>();
+        roles.add(Role.USER);
+
         User user = User.builder()
                 .fullName(dto.getFullName())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .roles(Collections.singleton(Role.USER))
+                .roles(roles)
                 .build();
 
         userRepository.save(user);
@@ -61,7 +69,15 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Invalid credentials");
         }
 
-        return jwtUtil.generateToken(user.getEmail());
+        return jwtUtil.generateToken(user.getEmail(), user.getRoles());
+    }
+
+    @Override
+    public List<UserResponseDTO> findUsersByRole(Role role) {
+        List<User> users = userRepository.findByRolesContaining(role);
+        return users.stream()
+                .map(user -> new UserResponseDTO(user.getId(), user.getEmail(), user.getFullName(), ""))
+                .collect(Collectors.toList());
     }
 
 }

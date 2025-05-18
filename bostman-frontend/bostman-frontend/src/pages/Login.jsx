@@ -9,11 +9,11 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const { data } = await api.post('/auth/login', form);
-      localStorage.setItem('token', data); // Save JWT
+      const { data } = await api.post('/login/', form); // Use the correct endpoint
+      localStorage.setItem('token', data.token); // Save the JWT token
       navigate('/dashboard');
     } catch (err) {
-      alert('Login failed');
+      alert('Login failed. Please check your credentials.');
     }
   };
 
