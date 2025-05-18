@@ -1,6 +1,7 @@
+import React from 'react';
 import { useAuth } from '../auth/useAuth';
 import CustomerPanel from '../roles/CustomerPanel';
-import AdminPanel from '../roles/AdminPanel';
+import AdminPanel from '../roles/AdminPanel.jsx';
 import DriverPanel from '../roles/DriverPanel';
 
 export default function Dashboard() {

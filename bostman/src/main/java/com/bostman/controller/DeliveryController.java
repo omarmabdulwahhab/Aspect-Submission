@@ -7,6 +7,7 @@ import com.bostman.entity.User;
 import com.bostman.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,5 +47,11 @@ public class DeliveryController {
         List<DeliveryResponseDTO> deliveries = deliveryService.getMyDeliveries(user.getEmail());
         return ResponseEntity.ok(deliveries);
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all")
+    public List<DeliveryResponseDTO> allDeliveries() {
+        return deliveryService.getAllDeliveries();
+    }
+
 
 }

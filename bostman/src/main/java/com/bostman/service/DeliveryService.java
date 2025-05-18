@@ -11,4 +11,9 @@ public interface DeliveryService {
     List<DeliveryResponseDTO> getMyDeliveries(String email);
     DeliveryResponseDTO getByTrackingId(String trackingId);
     DeliveryResponseDTO updateDeliveryStatus(String trackingId, DeliveryStatus newStatus);
+
+    List<DeliveryResponseDTO> getAllDeliveries();
+    List<DeliveryResponseDTO> getDeliveriesByDriver(String email);
+    String markAsDelivered(String trackingId, String driverEmail);
+
 }

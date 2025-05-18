@@ -111,4 +111,52 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .assignedDriver(updatedDelivery.getAssignedDriver() != null ? updatedDelivery.getAssignedDriver().getEmail() : null)
                 .build();
     }
+
+    @Override
+    public List<DeliveryResponseDTO> getAllDeliveries() {
+        return deliveryRepository.findAll().stream().map(d ->
+                DeliveryResponseDTO.builder()
+                        .trackingId(d.getTrackingId())
+                        .pickupLocation(d.getPickupLocation())
+                        .dropoffLocation(d.getDropoffLocation())
+                        .status(d.getStatus())
+                        .assignedDriver(d.getAssignedDriver() != null ? d.getAssignedDriver().getFullName() : null)
+                        .build()
+        ).toList();
+    }
+    @Override
+    public List<DeliveryResponseDTO> getDeliveriesByDriver(String email) {
+        User driver = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        return deliveryRepository.findByAssignedDriver(driver).stream()
+                .map(d -> DeliveryResponseDTO.builder()
+                        .trackingId(d.getTrackingId())
+                        .pickupLocation(d.getPickupLocation())
+                        .dropoffLocation(d.getDropoffLocation())
+                        .status(d.getStatus())
+                        .assignedDriver(driver.getFullName())
+                        .build()
+                ).toList();
+    }
+
+    @Override
+    public String markAsDelivered(String trackingId, String driverEmail) {
+        User driver = userRepository.findByEmail(driverEmail)
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        Delivery delivery = deliveryRepository.findByTrackingId(trackingId)
+                .orElseThrow(() -> new RuntimeException("Delivery not found"));
+
+        if (!driver.equals(delivery.getAssignedDriver())) {
+            throw new RuntimeException("You are not assigned to this delivery");
+        }
+
+        delivery.setStatus(DeliveryStatus.DELIVERED);
+        deliveryRepository.save(delivery);
+
+        return "Delivery marked as delivered.";
+    }
+
+
 }
