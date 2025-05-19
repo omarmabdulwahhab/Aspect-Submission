@@ -1,12 +1,22 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:alpine
+    container_name: bostman-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - bostman_network
+
   rabbitmq:
     image: rabbitmq:3.13-management
     container_name: bostman-rabbitmq
     ports:
-      - "5672:5672"    # AMQP protocol port
-      - "15672:15672"  # Management console port
+      - "5672:5672"
+      - "15672:15672"
     environment:
       - RABBITMQ_DEFAULT_USER=bostman
       - RABBITMQ_DEFAULT_PASS=bostman123
@@ -29,6 +39,8 @@ services:
       - bostman_network
 
 volumes:
+  redis_data:
+    name: bostman_redis_data
   rabbitmq_data:
     name: bostman_rabbitmq_data
   mysql_data:
@@ -36,4 +48,4 @@ volumes:
 
 networks:
   bostman_network:
-    name: bostman_network 
+    name: bostman_network

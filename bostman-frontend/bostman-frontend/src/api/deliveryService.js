@@ -146,4 +146,29 @@ export const deleteDelivery = async (trackingId) => {
   }
   // No content expected on successful DELETE (204)
   return; 
+};
+
+/**
+ * Updates details of a specific delivery.
+ * Backend: PUT /api/deliveries/{trackingId} (Requires Auth - User must own or be Admin)
+ * @param {string} trackingId - The tracking ID of the delivery.
+ * @param {object} deliveryUpdateDTO - The delivery data to update.
+ * @returns {Promise<object>} The updated delivery response DTO.
+ */
+export const editDelivery = async (trackingId, deliveryUpdateDTO) => {
+  const token = getAuthToken();
+  if (!token) throw new Error('Authentication token not found. Please login.');
+
+ const response = await fetch(`http://localhost:8080/api/deliveries/${trackingId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  },
+  body: JSON.stringify(deliveryUpdateDTO),
+});
+
+  return handleResponse(response); // Expects JSON object (updated delivery)
 }; 
+
+

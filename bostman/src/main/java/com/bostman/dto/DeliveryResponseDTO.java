@@ -14,4 +14,5 @@ public class DeliveryResponseDTO {
     private String driverEmail;
     private String description;
     private String recipientName;
+    private String recipientMobileNumber;
 }

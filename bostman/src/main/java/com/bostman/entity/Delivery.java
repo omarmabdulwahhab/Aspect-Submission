@@ -22,6 +22,7 @@ public class Delivery {
     private String dropoffLocation;
     private String description;
     private String recipientName;
+    private String recipientMobileNumber;
 
     private LocalDateTime scheduledTime;
 

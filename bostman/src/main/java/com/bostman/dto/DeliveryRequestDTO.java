@@ -10,5 +10,6 @@ public class DeliveryRequestDTO {
     private String recipientAddress;
     private String description;
     private String recipientName;
+    private String recipientMobileNumber;
     private LocalDateTime scheduledTime;
 }

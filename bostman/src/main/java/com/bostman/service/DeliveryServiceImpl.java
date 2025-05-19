@@ -3,6 +3,7 @@ package com.bostman.service;
 import com.bostman.dto.DeliveryRequestDTO;
 import com.bostman.dto.DeliveryResponseDTO;
 import com.bostman.dto.EmailMessage;
+import com.bostman.dto.DeliveryUpdateDTO;
 import com.bostman.entity.Delivery;
 import com.bostman.entity.DeliveryStatus;
 import com.bostman.entity.User;
@@ -37,6 +38,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .customer(customer)
                 .description(request.getDescription())
                 .recipientName(request.getRecipientName())
+                .recipientMobileNumber(request.getRecipientMobileNumber())
                 .build();
 
         Delivery savedDelivery = deliveryRepository.save(delivery);
@@ -48,6 +50,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             "<b>Status:</b> %s<br>" +
             "<b>Description:</b> %s<br>" +
             "<b>Recipient Name:</b> %s<br>" +
+            "<b>Recipient Mobile:</b> %s<br>" +
             "<b>Pickup Address:</b> %s<br>" +
             "<b>Recipient Address (Dropoff):</b> %s<br><br>" +
             "Thank you for using Bostman!",
@@ -56,6 +59,7 @@ public class DeliveryServiceImpl implements DeliveryService {
             savedDelivery.getStatus().toString(),
             savedDelivery.getDescription() != null ? savedDelivery.getDescription() : "N/A",
             savedDelivery.getRecipientName() != null ? savedDelivery.getRecipientName() : "N/A",
+            savedDelivery.getRecipientMobileNumber() != null ? savedDelivery.getRecipientMobileNumber() : "N/A",
             savedDelivery.getPickupLocation() != null ? savedDelivery.getPickupLocation() : "N/A",
             savedDelivery.getDropoffLocation() != null ? savedDelivery.getDropoffLocation() : "N/A"
         );
@@ -81,6 +85,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                     .driverEmail(driverEmail)
                     .description(d.getDescription())
                     .recipientName(d.getRecipientName())
+                    .recipientMobileNumber(d.getRecipientMobileNumber())
                     .build();
         }).toList();
     }
@@ -103,6 +108,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .driverEmail(driverEmail)
                 .description(d.getDescription())
                 .recipientName(d.getRecipientName())
+                .recipientMobileNumber(d.getRecipientMobileNumber())
                 .build();
     }
 
@@ -138,6 +144,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                 .driverEmail(driverEmail)
                 .description(updatedDelivery.getDescription())
                 .recipientName(updatedDelivery.getRecipientName())
+                .recipientMobileNumber(updatedDelivery.getRecipientMobileNumber())
                 .build();
     }
 
@@ -153,6 +160,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                     .driverEmail(driverEmail)
                     .description(d.getDescription())
                     .recipientName(d.getRecipientName())
+                    .recipientMobileNumber(d.getRecipientMobileNumber())
                     .build();
         }).toList();
     }
@@ -172,6 +180,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                             .driverEmail(driver.getEmail())
                             .description(d.getDescription())
                             .recipientName(d.getRecipientName())
+                            .recipientMobileNumber(d.getRecipientMobileNumber())
                             .build();
                 }).toList();
     }
@@ -210,5 +219,75 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         deliveryRepository.delete(delivery);
         // Optionally, send a notification about the deletion.
+    }
+
+    @Override
+    public DeliveryResponseDTO updateDeliveryDetails(String trackingId, DeliveryUpdateDTO updateDTO) {
+        Delivery delivery = deliveryRepository.findByTrackingId(trackingId)
+                .orElseThrow(() -> new RuntimeException("Delivery not found with tracking ID: " + trackingId));
+
+        boolean updated = false;
+
+        if (updateDTO.getDescription() != null) {
+            delivery.setDescription(updateDTO.getDescription());
+            updated = true;
+        }
+        if (updateDTO.getRecipientName() != null) {
+            delivery.setRecipientName(updateDTO.getRecipientName());
+            updated = true;
+        }
+        if (updateDTO.getPickupLocation() != null) {
+            delivery.setPickupLocation(updateDTO.getPickupLocation());
+            updated = true;
+        }
+        if (updateDTO.getDropoffLocation() != null) {
+            delivery.setDropoffLocation(updateDTO.getDropoffLocation());
+            updated = true;
+        }
+        if (updateDTO.getRecipientMobileNumber() != null) {
+            delivery.setRecipientMobileNumber(updateDTO.getRecipientMobileNumber());
+            updated = true;
+        }
+        // Add checks for other editable fields from DeliveryUpdateDTO here
+        // e.g., if (updateDTO.getScheduledTime() != null) { ... }
+
+        if (updated) {
+            delivery = deliveryRepository.save(delivery);
+            // Consider sending a notification to the customer if details changed
+            User customer = delivery.getCustomer();
+            if (customer != null) {
+                String subject = "Your Delivery Details Have Been Updated - Tracking ID: " + delivery.getTrackingId();
+                String body = String.format(
+                    "Hello %s,<br><br>" +
+                    "The details for your delivery (Tracking ID: %s) have been updated. Here are the current details:<br><br>" +
+                    "<b>Description:</b> %s<br>" +
+                    "<b>Recipient Name:</b> %s<br>" +
+                    "<b>Recipient Mobile:</b> %s<br>" +
+                    "<b>Pickup Address:</b> %s<br>" +
+                    "<b>Recipient Address (Dropoff):</b> %s<br><br>" +
+                    "Thank you for using Bostman!",
+                    customer.getFullName() != null ? customer.getFullName() : "Valued Customer",
+                    delivery.getTrackingId(),
+                    delivery.getDescription() != null ? delivery.getDescription() : "N/A",
+                    delivery.getRecipientName() != null ? delivery.getRecipientName() : "N/A",
+                    delivery.getRecipientMobileNumber() != null ? delivery.getRecipientMobileNumber() : "N/A",
+                    delivery.getPickupLocation() != null ? delivery.getPickupLocation() : "N/A",
+                    delivery.getDropoffLocation() != null ? delivery.getDropoffLocation() : "N/A"
+                );
+                messageProducer.sendEmailMessage(new EmailMessage(customer.getEmail(), subject, body));
+            }
+        }
+
+        String driverEmail = delivery.getAssignedDriver() != null ? delivery.getAssignedDriver().getEmail() : null;
+        return DeliveryResponseDTO.builder()
+                .trackingId(delivery.getTrackingId())
+                .pickupAddress(delivery.getPickupLocation())
+                .recipientAddress(delivery.getDropoffLocation())
+                .status(delivery.getStatus())
+                .driverEmail(driverEmail)
+                .description(delivery.getDescription())
+                .recipientName(delivery.getRecipientName())
+                .recipientMobileNumber(delivery.getRecipientMobileNumber())
+                .build();
     }
 }

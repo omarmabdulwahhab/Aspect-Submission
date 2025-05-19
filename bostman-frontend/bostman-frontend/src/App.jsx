@@ -20,6 +20,7 @@ import TrackDeliveryPage from './pages/TrackDeliveryPage';
 import DriverAssignedDeliveriesPage from './pages/DriverAssignedDeliveriesPage';
 import AdminAllDeliveriesPage from './pages/AdminAllDeliveriesPage';
 import AdminAssignDriverPage from './pages/AdminAssignDriverPage';
+import EditDeliveryPage from './pages/EditDeliveryPage';
 
 // Placeholder pages for features
 // const AdminAssignDriverPage = () => <div><h2>Assign Driver (Admin)</h2><p>Form to assign driver...</p><Link to="/">Back to Dashboard</Link></div>; // Remove old placeholder
@@ -53,6 +54,7 @@ function App() {
             <Route path="my-deliveries" element={<MyDeliveriesPage />} />
             <Route path="schedule-delivery" element={<ScheduleDeliveryPage />} />
             <Route path="track-delivery" element={<TrackDeliveryPage />} />
+            <Route path="edit-delivery/:trackingId" element={<EditDeliveryPage />} />
           </Route>
 
           {/* Protected Admin Routes */}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getMyDeliveries as fetchMyDeliveries, deleteDelivery as apiDeleteDelivery } from '../api/deliveryService';
 // import { useAuth } from '../contexts/AuthContext'; // Not strictly needed here if ProtectedRoute handles auth
 
@@ -82,14 +82,23 @@ function MyDeliveriesPage() {
                     <p><strong className="text-bostman-orange-dark">Pickup:</strong> {delivery.pickupAddress || 'N/A'}</p>
                 </div>
                 <div className="flex flex-col md:items-end md:justify-between space-y-2 md:space-y-0">
-                    <Link to={`/track-delivery?id=${delivery.trackingId}`} className="button-style text-center w-full md:w-auto">Track this delivery</Link>
-                    <button 
-                        onClick={() => handleDelete(delivery.trackingId)}
-                        className="button-style bg-red-600 hover:bg-red-700 text-white w-full md:w-auto disabled:opacity-50"
-                        disabled={loading} // Disable button if any loading is active
-                    >
-                        {loading && !error && !actionError ? 'Deleting...' : 'Delete Delivery'}
-                    </button>
+                    <div className="mt-4 flex flex-wrap items-center gap-4 md:justify-end">
+                      <Link to={`/track-delivery?id=${delivery.trackingId}`} className="button-style">
+                        Track this delivery
+                      </Link>
+                      {(delivery.status === 'SCHEDULED' || delivery.status === 'PENDING_PICKUP') && (
+                        <Link to={`/edit-delivery/${delivery.trackingId}`} className="button-style">
+                          Edit Delivery
+                        </Link>
+                      )}
+                      <button 
+                        onClick={() => handleDelete(delivery.trackingId)} 
+                        className="button-style-danger"
+                        disabled={loading}
+                      >
+                        Delete Delivery
+                      </button>
+                    </div>
                 </div>
               </div>
             </li>

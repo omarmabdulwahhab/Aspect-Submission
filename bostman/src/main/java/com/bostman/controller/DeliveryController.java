@@ -1,5 +1,6 @@
 package com.bostman.controller;
 
+import com.bostman.Annotations.RateLimit;
 import com.bostman.dto.DeliveryRequestDTO;
 import com.bostman.dto.DeliveryResponseDTO;
 import com.bostman.dto.DeliveryStatusUpdateDTO;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
+import com.bostman.dto.DeliveryUpdateDTO;
 
 import java.util.List;
 
@@ -44,6 +46,7 @@ public class DeliveryController {
         return deliveryService.updateDeliveryStatus(trackingId, statusUpdateDTO.getNewStatus());
     }
     @GetMapping("/my-deliveries")
+    @RateLimit(limit = 4, duration = 10, keyPrefix = "userDeliveries")
     public ResponseEntity<List<DeliveryResponseDTO>> getMyDeliveries(@AuthenticationPrincipal User user) {
         List<DeliveryResponseDTO> deliveries = deliveryService.getMyDeliveries(user.getEmail());
         return ResponseEntity.ok(deliveries);
@@ -69,4 +72,23 @@ public class DeliveryController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+    @PutMapping("/{trackingId}")
+    public ResponseEntity<DeliveryResponseDTO> editDelivery(@PathVariable String trackingId,
+                                                            @RequestBody DeliveryUpdateDTO updateDTO,
+                                                            @AuthenticationPrincipal User user) {
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            DeliveryResponseDTO updated = deliveryService.updateDeliveryDetails(trackingId, updateDTO);
+            return ResponseEntity.ok(updated);
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
 }
