@@ -11,9 +11,11 @@ import com.bostman.repository.DeliveryRepository;
 import com.bostman.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
+import com.bostman.Annotations.DistributedLock;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -221,7 +223,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         // Optionally, send a notification about the deletion.
     }
 
-    @Override
+    @Transactional
+    @DistributedLock(keyPrefix = "delivery", keyIdentifierExpression = "#trackingId", leaseTime = 120, timeUnit = TimeUnit.SECONDS)
     public DeliveryResponseDTO updateDeliveryDetails(String trackingId, DeliveryUpdateDTO updateDTO) {
         Delivery delivery = deliveryRepository.findByTrackingId(trackingId)
                 .orElseThrow(() -> new RuntimeException("Delivery not found with tracking ID: " + trackingId));
